@@ -19,6 +19,9 @@ int main(void) {
         puts("could not create socket");
     }
 
+    int reuse = 1;
+    setsockopt(socket_desc, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(2137);
@@ -74,12 +77,15 @@ void* connection_handler(void* socket_desc) {
     write(sock, msg, strlen(msg));
 
     ssize_t read_size;
+
     char client_message[2000];
 
     while((read_size = recv(sock, client_message, 2000, 0)) > 0) {
         printf("writing:\n\n%s\nto client\n", client_message);
 
         write(sock, client_message, strlen(client_message));
+
+        memset(client_message, 0, 2000);
     }
 
     if(read_size == 0) {
