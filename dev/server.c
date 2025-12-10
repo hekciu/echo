@@ -21,14 +21,14 @@ int main(void) {
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = 8888;
+    server.sin_port = htons(2137);
 
     if (bind(socket_desc, (struct sockaddr*)&server, sizeof(server)) < 0) {
         puts("bind failed");
         return 1;
     }
 
-    if (listen(socket_desc, 1) < 0) {
+    if (listen(socket_desc, 3) < 0) {
         puts("listen failed");
         return 1;
     }
