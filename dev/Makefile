@@ -1,7 +1,7 @@
 
 
 
-SERVER=server_0
+SERVER=server_1
 
 
 main: $(SERVER).c
