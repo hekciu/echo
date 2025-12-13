@@ -1,1 +1,2 @@
 - https://gist.github.com/Scherso/d11e7de8bd27f234519cfb94348d9c70
+- https://stackoverflow.com/questions/22444526/x86-64-linux-syscall-arguments

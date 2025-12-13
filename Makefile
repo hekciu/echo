@@ -1,17 +1,13 @@
 
 build: main
 
-
-asm: asm.s
-	gcc -c asm.s -o asm
-
-main: main.c asm
+main: main.c asm.s
 	gcc \
-    -O2 \
+    -O0 \
     -s \
     -fno-unwind-tables \
     -fno-asynchronous-unwind-tables \
     -nostdlib \
-    asm \
     main.c \
+    asm.s \
     -o server

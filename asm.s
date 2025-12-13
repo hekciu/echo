@@ -1,4 +1,4 @@
-.global _start, syscall5
+.global _start, syscall5, syscall6
 .text
 
 
@@ -16,6 +16,19 @@ _start:
     ret
 
 
+syscall6:
+    mov     %rdi, %rax
+    mov     %rsi, %rdi
+    mov     %rdx, %rsi
+    mov     %rcx, %rdx
+    mov     %r8, %r10
+    mov     %r9, %r8
+    pop     %r9
+    syscall
+
+    ret
+
+
 syscall5:
     mov     %rdi, %rax
     mov     %rsi, %rdi
@@ -24,5 +37,6 @@ syscall5:
     mov     %r8, %r10
     mov     %r9, %r8
     syscall
+
     ret
 
