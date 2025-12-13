@@ -13,4 +13,5 @@ main: main.c asm
     -fno-asynchronous-unwind-tables \
     -nostdlib \
     asm \
-    main.c
+    main.c \
+    -o server
