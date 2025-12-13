@@ -9,6 +9,7 @@
 void connection_handler(int sock);
 
 
+
 // typedefs
 
 typedef long unsigned int size_t;
@@ -23,6 +24,14 @@ typedef unsigned int socklen_t;
 typedef unsigned short sa_family_t;
 
 /**/
+
+// defines
+
+#define AF_INET 2
+#define SOCK_STREAM 1
+#define SOL_SOCKET 1
+#define SO_REUSEADDR 2
+#define INADDR_ANY ((in_addr_t) 0x00000000)
 
 
 //structs
