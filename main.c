@@ -1,21 +1,19 @@
+/* Basic defines for cleaner code */
+
 #define stdout 1
 #define NULL 0
 
 
+/* Declaration of connection handler for separate process */
+
 void connection_handler(int sock);
 
 
-// assembly-defined syscall's
+/*
+    Assembly-defined syscall's
+*/
 
-void* sys_recvfrom(
-        void* arg1,
-        void* arg2,
-        void* arg3,
-        void* arg4,
-        void* arg5,
-        void* arg6
-);
-
+/* Generic syscall with at most 5 arguments */
 void* syscall5(
         void* number,
         void* arg1,
@@ -25,58 +23,29 @@ void* syscall5(
         void* arg5
 );
 
-
-
-// wrappers
-
-void* syscall4(
-        void* number,
+/* One hardcoded syscall that needs 6 arguments */
+void* sys_recvfrom(
         void* arg1,
         void* arg2,
         void* arg3,
-        void* arg4
-) { syscall5(number, arg1, arg2, arg3, arg4, NULL); };
+        void* arg4,
+        void* arg5,
+        void* arg6
+);
 
-void* syscall3(
-        void* number,
-        void* arg1,
-        void* arg2,
-        void* arg3
-) { syscall5(number, arg1, arg2, arg3, NULL, NULL); };
 
-void* syscall2(
-        void* number,
-        void* arg1,
-        void* arg2
-) { syscall5(number, arg1, arg2, NULL, NULL, NULL); };
-
-void* syscall1(
-        void* number,
-        void* arg1
-) { syscall5(number, arg1, NULL, NULL, NULL, NULL); };
-
-void* syscall0(
-        void* number
-) { syscall5(number, NULL, NULL, NULL, NULL, NULL); };
-
-// typedefs
-
+/* Typedef's, theit size were obtained from calls to sizeof(), definition may vary between machines */
 typedef long unsigned int size_t;
 typedef long ssize_t;
 
 typedef unsigned long int in_addr_t;
 typedef unsigned short in_port_t;
 
-/* Size of these typedefs were got from call to sizeof() on my machine, this may vary */
-/* socklen_t: 4, sa_family_t: 2 */
 typedef unsigned int socklen_t;
 typedef unsigned short sa_family_t;
 
-/**/
 
-
-// defines
-
+/* Socket-specific defines (could be found inside libc's include files)*/
 #define AF_INET 2
 #define SOCK_STREAM 1
 #define SOL_SOCKET 1
@@ -84,8 +53,7 @@ typedef unsigned short sa_family_t;
 #define INADDR_ANY ((in_addr_t) 0x00000000)
 
 
-//structs
-
+/* Socket-specific structs (could be found in manpages) */
 struct sockaddr {
    sa_family_t     sa_family;      /* Address family */
    char            sa_data[];      /* Socket address */
@@ -106,8 +74,7 @@ struct sockaddr_in {
 };
 
 
-// libc stuff
-
+/* Generic libc helper functions */
 size_t strlen(const char* s) {
     size_t output = 0;
 
@@ -127,10 +94,10 @@ void* memset(void* dest, int data, size_t count) {
 }
 
 
-// network functions
+/* Helpers related to network byte order */
 
 /*
-    We are on Intel (little endian) and the network byte order is big endian,
+    We are on x86_64 Intel (little endian) and the network byte order is ALWAYS big endian,
     so we are essentially switching bytes inside a short
 */
 short htons(short input) {
@@ -143,58 +110,111 @@ short htons(short input) {
 }
 
 /*
-    Same thing as htons
+    Here we also basically switch two bytes
 */
 short ntohs(short value) {
     return htons(value);
 }
 
 
-// wrappers for various syscalls
-
+/* Wrapper functions for various syscalls */
 int my_fork() {
-    return syscall0(57);
+    return (int)(ssize_t) syscall5(
+        (void*)57,
+        (void*)NULL,
+        (void*)NULL,
+        (void*)NULL,
+        (void*)NULL,
+        (void*)NULL
+    );
 }
 
 
 int my_socket(int family, int type, int protocol) {
-    return syscall3(41, family, type, protocol);
+    return (int)(ssize_t)syscall5(
+        (void*)41,
+        (void*)(ssize_t)family,
+        (void*)(ssize_t)type,
+        (void*)(ssize_t)protocol,
+        (void*)NULL,
+        (void*)NULL
+    );
 }
 
 
 int my_bind(int fd, struct sockaddr* umyaddr, int addrlen) {
-    return syscall3(49, fd, umyaddr, addrlen);
+    return (int)(ssize_t)syscall5(
+        (void*)49,
+        (void*)(ssize_t)fd,
+        (void*)umyaddr,
+        (void*)(ssize_t)addrlen,
+        (void*)NULL,
+        (void*)NULL
+    );
 }
 
 
 int my_listen(int fd, int backlog) {
-    return syscall2(50, fd, backlog);
+    return (int)(ssize_t)syscall5(
+        (void*)50,
+        (void*)(ssize_t)fd,
+        (void*)(ssize_t)backlog,
+        (void*)NULL,
+        (void*)NULL,
+        (void*)NULL
+    );
 }
 
 
 int my_accept(int fd, struct sockaddr* upeer_sockaddr, int* upeer_addrlen) {
-    return syscall3(43, fd, upeer_sockaddr, upeer_addrlen);
+    return (int)(ssize_t)syscall5(
+        (void*)43,
+        (void*)(ssize_t)fd,
+        (void*)upeer_sockaddr,
+        (void*)upeer_addrlen,
+        (void*)NULL,
+        (void*)NULL
+    );
 }
 
 
 int my_setsockopt(int fd, int level, int optname, void* optval, int optlen) {
-    return syscall5(54, fd, level, optname, optval, optlen);
+    return (int)(ssize_t)syscall5(
+        (void*)54,
+        (void*)(ssize_t)fd,
+        (void*)(ssize_t)level,
+        (void*)(ssize_t)optname,
+        (void*)optval,
+        (void*)(ssize_t)optlen
+    );
 }
 
 
-int my_write(unsigned int fd, const char* buf, size_t count) {
-    return syscall3(1, fd, buf, count);
+int my_write(int fd, const char* buf, size_t count) {
+    return (int)(ssize_t)syscall5(
+        (void*)1,
+        (void*)(ssize_t)fd,
+        (void*)buf,
+        (void*)count,
+        (void*)NULL,
+        (void*)NULL
+    );
 }
 
 
 ssize_t my_recvfrom(int fd, void* ubuf, size_t size, unsigned int flags, struct sockaddr* addr, int* addr_len) {
-    //return syscall6(45, fd, ubuf, size, flags, addr, addr_len);
-    //return syscall5(45, fd, ubuf, size, flags, addr);
-    return sys_recvfrom(fd, ubuf, size, flags, addr, addr_len);
+    return (ssize_t)sys_recvfrom(
+        (void*)(ssize_t)fd,
+        (void*)ubuf,
+        (void*)size,
+        (void*)(ssize_t)flags,
+        (void*)addr,
+        (void*)addr_len
+    );
 }
 
 
-// some even higher-level wrappers for syscalls
+/* Some even higher-level wrapper functions for syscalls */
 void my_puts(const char* msg) {
     my_write(stdout, msg, strlen(msg));
     my_write(stdout, "\n", 1);
@@ -250,6 +270,7 @@ int main(void) {
             return 1;
         } else if (pid == 0) {
             connection_handler(new_socket);
+            return 0;
         }
     }
 
