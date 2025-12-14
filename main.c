@@ -7,8 +7,7 @@ void connection_handler(int sock);
 
 // assembly-defined syscall's
 
-void* syscall6(
-        void* number,
+void* sys_recvfrom(
         void* arg1,
         void* arg2,
         void* arg3,
@@ -190,7 +189,8 @@ int my_write(unsigned int fd, const char* buf, size_t count) {
 
 ssize_t my_recvfrom(int fd, void* ubuf, size_t size, unsigned int flags, struct sockaddr* addr, int* addr_len) {
     //return syscall6(45, fd, ubuf, size, flags, addr, addr_len);
-    return syscall5(45, fd, ubuf, size, flags, addr);
+    //return syscall5(45, fd, ubuf, size, flags, addr);
+    return sys_recvfrom(fd, ubuf, size, flags, addr, addr_len);
 }
 
 
