@@ -45,7 +45,7 @@ typedef unsigned int socklen_t;
 typedef unsigned short sa_family_t;
 
 
-/* Socket-specific defines (could be found inside libc's include files)*/
+/* Socket-specific defines (can be found inside libc's include files)*/
 #define AF_INET 2
 #define SOCK_STREAM 1
 #define SOL_SOCKET 1
@@ -53,7 +53,7 @@ typedef unsigned short sa_family_t;
 #define INADDR_ANY ((in_addr_t) 0x00000000)
 
 
-/* Socket-specific structs (could be found in manpages) */
+/* Socket-specific structs (can be found in manpages) */
 struct sockaddr {
    sa_family_t     sa_family;      /* Address family */
    char            sa_data[];      /* Socket address */
@@ -239,7 +239,7 @@ int main(void) {
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(2137);
+    server.sin_port = htons(5555);
 
     if (my_bind(socket_desc, (struct sockaddr*)&server, sizeof(server)) < 0) {
         my_puts("bind failed");

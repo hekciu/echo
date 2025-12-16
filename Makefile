@@ -1,12 +1,9 @@
 
 build: main
 
-main: main.c asm.s
+main: main.c asm.s Makefile
 	gcc \
     -O0 \
-    -s \
-    -fno-unwind-tables \
-    -fno-asynchronous-unwind-tables \
     -nostdlib \
     main.c \
     asm.s \
